@@ -7,12 +7,12 @@ imports:
 
 # The blueprint contains two nodes, a vm and a web server hosted in it.
 blueprint:
-    name: template_bash-timestamp-1
+    name: elasticsearch-timestamp-1
     nodes:
         -   name: vm
             type: openstack_host
 
-        -   name: template_bash
+        -   name: elasticsearch
             type: bash_runner
             relationships:
                 -   type: cloudify.relationships.contained_in
@@ -39,7 +39,7 @@ types:
             -   nova_config:
                     region: az-2.region-a.geo-1
                     instance:
-                        name: template_bash
+                        name: elasticsearch
                         image: 67074
                         flavor: 101
                         key_name: cloudify-agents-kp-rantav2

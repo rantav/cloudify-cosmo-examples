@@ -6,6 +6,7 @@ echo "START"
 echo
 cd /tmp/
 
+sudo apt-get update
 sudo apt-get install openjdk-7-jre -y
 
 wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-$VERSION.tar.gz
