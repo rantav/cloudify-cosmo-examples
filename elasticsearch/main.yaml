@@ -1,16 +1,15 @@
 #######
-# Cloudify Blueprint which runs a bash script
+# Cloudify Blueprint which runs a single node elasticserch
 
 imports:
-    - cloudify.types
-    - openstack_host_provisioner
+    - cloudify.openstack
 
 # The blueprint contains two nodes, a vm and a web server hosted in it.
 blueprint:
     name: elasticsearch-timestamp-1
     nodes:
         -   name: vm
-            type: openstack_host
+            type: cloudify.types.host
 
         -   name: elasticsearch
             type: bash_runner
@@ -28,27 +27,29 @@ plugins:
             url: https://github.com/rantav/cosmo-plugin-bash-runner/archive/master.zip
 
 types:
-    openstack_host:
-        derived_from: cloudify.types.host
-        properties:
-            -   install_agent: true
-            -   worker_config:
-                    user: ubuntu
-                    port: 22
-                    key: ~/.ssh/cloudify-agents-kp.pem
-            -   nova_config:
-                    region: az-2.region-a.geo-1
-                    instance:
-                        name: elasticsearch
-                        image: 67074
-                        flavor: 101
-                        key_name: cloudify-agents-kp-rantav2
-        interfaces:
-            cloudify.interfaces.lifecycle:
-                -   create: openstack_host_provisioner.tasks.provision
-                -   start: openstack_host_provisioner.tasks.start
     bash_runner:
         derived_from: cloudify.types.web_server
         interfaces:
             cloudify.interfaces.lifecycle:
                 -   start: bash_runner.tasks.start
+
+type_implementations:
+    vm_openstack_host_impl:
+        type: cloudify.openstack.server
+        node_ref: vm
+        properties:
+            install_agent: true
+            worker_config:
+                user: ubuntu
+                port: 22
+                key: ~/.ssh/cloudify-agents-kp.pem
+            server:
+                name: elasticsearch
+                image_name: 'Ubuntu Precise 12.04 LTS Server 64-bit 20121026 (b)'
+                flavor_name: standard.xsmall
+                key_name: cloudify-agents-kp-rantav2
+            nova_config:
+                region: az-2.region-a.geo-1
+    bash_runner_impl:
+        type: bash_runner
+        node_ref: elasticsearch
