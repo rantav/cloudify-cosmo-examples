@@ -13,6 +13,8 @@ blueprint:
 
         -   name: template_bash
             type: bash_runner
+            properties:
+                scripts: ["start.sh"]
             relationships:
                 -   type: cloudify.relationships.contained_in
                     target: vm
@@ -29,10 +31,11 @@ plugins:
 types:
     bash_runner:
         derived_from: cloudify.types.web_server
+        properties:
+            - scripts: []
         interfaces:
             cloudify.interfaces.lifecycle:
-                -   start: bash_runner.tasks.start
-
+                -   start: bash_runner.tasks.run
 
 type_implementations:
     vm_openstack_host_impl:
